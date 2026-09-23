@@ -80,7 +80,7 @@ public class AvaliacaoControllerTests {
 
         // chamada
         MvcResult result = mockMvc.perform(
-                        post("/api/avaliacao")
+                        post("/avaliacao")
                                 .contentType("application/json")
                                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
