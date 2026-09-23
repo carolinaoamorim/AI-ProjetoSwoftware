@@ -1,4 +1,4 @@
-package br.insper.pagamento;
+package br.insper.curso;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -49,10 +49,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 
 @SpringBootApplication
-public class PagamentoApplication {
+public class CursoApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PagamentoApplication.class, args);
+		SpringApplication.run(CursoApplication.class, args);
 	}
 
 }
