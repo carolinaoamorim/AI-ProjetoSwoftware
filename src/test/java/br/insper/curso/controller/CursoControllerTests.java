@@ -128,4 +128,13 @@ public class CursoControllerTests {
         mockMvc.perform(delete("/cursos/9999"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    public void deveRetornar404AoDeletarCursoJaDeletado() throws Exception {
+        Curso curso = salvarCurso("Java Básico", true);
+
+        mockMvc.perform(delete("/cursos/" + curso.getId()))
+                .andExpect(status().isNotFound());
+    }
+
 }

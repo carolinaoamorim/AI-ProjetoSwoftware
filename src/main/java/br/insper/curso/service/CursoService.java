@@ -33,6 +33,7 @@ public class CursoService {
 
 	public void deletar(Long id) {
 		Curso curso = cursoRepository.findById(id)
+				.filter(c -> !c.isDeletado())
 				.orElseThrow(() -> new CursoNaoEncontradoException("Curso com ID " + id + " não encontrado"));
 		curso.setDeletado(true);
 		cursoRepository.save(curso);
