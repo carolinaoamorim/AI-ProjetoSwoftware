@@ -37,7 +37,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: carolinaoamorim/AvaliacaoIntermediaria-ci:${{ github.sha }}
+        tags: carolinaoamorim/avaliacaointermediaria-ci:${{ github.sha }}
 
 
     - name: executing remote ssh commands using password
@@ -48,6 +48,6 @@ jobs:
         key: ${{ secrets.KEY_TEST }}
         port: 22
         script: |
-          docker stop AvaliacaoIntermediaria
-          docker rm --force AvaliacaoIntermediaria
-          docker run  -d -p 8080:8080 --name AvaliacaoIntermediaria carolinaoamorim/AvaliacaoIntermediaria-ci:${{ github.sha }}
+          docker stop AvaliacaoIntermediaria || true
+          docker rm --force AvaliacaoIntermediaria || true
+          docker run  -d -p 8080:8080 --name AvaliacaoIntermediaria carolinaoamorim/avaliacaointermediaria-ci:${{ github.sha }}
