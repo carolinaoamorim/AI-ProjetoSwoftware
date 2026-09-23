@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.insper</groupId>
-	<artifactId>curso</artifactId>
+	<artifactId>avaliacao</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>

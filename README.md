@@ -172,13 +172,13 @@ Mockito.when(processador.processar(Mockito.any())).thenReturn(true);  // e outro
 ### Observer: avisar outras classes quando algo acontece
 ```java
 public interface CursoObserver {
-    void atualizar(Curso curso, String evento);
+    void atualizar(Curso avaliacao, String evento);
 }
 
 @Component
 public class LogObserver implements CursoObserver {
-    public void atualizar(Curso curso, String evento) {
-        System.out.println("Curso " + curso.getId() + ": " + evento);
+    public void atualizar(Curso avaliacao, String evento) {
+        System.out.println("Curso " + avaliacao.getId() + ": " + evento);
     }
 }
 ```
@@ -188,10 +188,10 @@ public class LogObserver implements CursoObserver {
 @Autowired(required = false)
 private List<CursoObserver> observers;
 
-private void notificar(Curso curso, String evento) {
+private void notificar(Curso avaliacao, String evento) {
     if (observers != null) {
         for (CursoObserver o : observers) {
-            o.atualizar(curso, evento);
+            o.atualizar(avaliacao, evento);
         }
     }
 }

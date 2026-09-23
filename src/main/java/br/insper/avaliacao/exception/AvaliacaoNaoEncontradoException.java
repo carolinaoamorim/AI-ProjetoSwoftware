@@ -1,11 +1,11 @@
-package br.insper.curso.exception;
+package br.insper.avaliacao.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class CursoNaoEncontradoException extends RuntimeException {
-	public CursoNaoEncontradoException(String mensagem) {
+public class AvaliacaoNaoEncontradoException extends RuntimeException {
+	public AvaliacaoNaoEncontradoException(String mensagem) {
 		super(mensagem);
 	}
 }

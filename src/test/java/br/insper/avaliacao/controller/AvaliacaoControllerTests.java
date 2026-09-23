@@ -1,8 +1,8 @@
-package br.insper.curso.controller;
+package br.insper.avaliacao.controller;
 
-import br.insper.curso.dto.CursoDto;
-import br.insper.curso.entity.Curso;
-import br.insper.curso.repository.CursoRepository;
+import br.insper.avaliacao.dto.AvaliacaoDto;
+import br.insper.avaliacao.entity.Avaliacao;
+import br.insper.avaliacao.repository.AvaliacaoRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public class CursoControllerTests {
+public class AvaliacaoControllerTests {
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
@@ -46,27 +46,27 @@ public class CursoControllerTests {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CursoRepository cursoRepository;
+    private AvaliacaoRepository avaliacaoRepository;
 
     @BeforeEach
     public void limparBanco() {
-        cursoRepository.deleteAll();
+        avaliacaoRepository.deleteAll();
     }
 
-    private Curso salvarCurso(String nome, boolean deletado) {
-        Curso curso = new Curso();
-        curso.setNome(nome);
-        curso.setDescricao("Descrição de " + nome);
-        curso.setCargaHoraria(40);
-        curso.setDeletado(deletado);
-        return cursoRepository.save(curso);
+    private Avaliacao salvarCurso(String nome, boolean deletado) {
+        Avaliacao avaliacao = new Avaliacao();
+        avaliacao.setNome(nome);
+        avaliacao.setDescricao("Descrição de " + nome);
+        avaliacao.setCargaHoraria(40);
+        avaliacao.setDeletado(deletado);
+        return avaliacaoRepository.save(avaliacao);
     }
 
     // POST /cursos
 
     @Test
     public void deveCriarCurso() throws Exception {
-        CursoDto dto = new CursoDto("Java Básico", "Introdução à linguagem", 40);
+        AvaliacaoDto dto = new AvaliacaoDto("Java Básico", "Introdução à linguagem", 40);
 
         mockMvc.perform(post("/cursos")
                         .contentType("application/json")
@@ -77,7 +77,7 @@ public class CursoControllerTests {
                 .andExpect(jsonPath("$.cargaHoraria").value(40))
                 .andExpect(jsonPath("$.deletado").value(false));
 
-        Assertions.assertEquals(1, cursoRepository.count());
+        Assertions.assertEquals(1, avaliacaoRepository.count());
     }
 
     // GET /cursos
@@ -111,12 +111,12 @@ public class CursoControllerTests {
 
     @Test
     public void deveDeletarCursoLogicamente() throws Exception {
-        Curso curso = salvarCurso("Java Básico", false);
+        Avaliacao avaliacao = salvarCurso("Java Básico", false);
 
-        mockMvc.perform(delete("/cursos/" + curso.getId()))
+        mockMvc.perform(delete("/cursos/" + avaliacao.getId()))
                 .andExpect(status().isNoContent());
 
-        Curso noBanco = cursoRepository.findById(curso.getId()).orElseThrow();
+        Avaliacao noBanco = avaliacaoRepository.findById(avaliacao.getId()).orElseThrow();
         Assertions.assertTrue(noBanco.isDeletado());
 
         mockMvc.perform(get("/cursos"))
@@ -131,9 +131,9 @@ public class CursoControllerTests {
 
     @Test
     public void deveRetornar404AoDeletarCursoJaDeletado() throws Exception {
-        Curso curso = salvarCurso("Java Básico", true);
+        Avaliacao avaliacao = salvarCurso("Java Básico", true);
 
-        mockMvc.perform(delete("/cursos/" + curso.getId()))
+        mockMvc.perform(delete("/cursos/" + avaliacao.getId()))
                 .andExpect(status().isNotFound());
     }
 
