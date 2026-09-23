@@ -13,7 +13,6 @@ import java.time.LocalDate;
 public class AvaliacaoDto {
 	private String autor;
 	private String conteudo;
-	private Integer cargaHoraria;
 	private NotaAvaliacao nota;
 	private LocalDate dataAvaliacao;
 }

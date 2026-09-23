@@ -2,6 +2,7 @@ package br.insper.avaliacao.controller;
 
 import br.insper.avaliacao.dto.AvaliacaoDto;
 import br.insper.avaliacao.entity.Avaliacao;
+import br.insper.avaliacao.entity.NotaAvaliacao;
 import br.insper.avaliacao.repository.AvaliacaoRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,11 +13,15 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.LocalDate;
+
+import static br.insper.avaliacao.entity.NotaAvaliacao.CINCO;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -28,7 +33,7 @@ public class AvaliacaoControllerTests {
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withDatabaseName("curso_test")
+            .withDatabaseName("avaliacao_test")
             .withUsername("test")
             .withPassword("test");
 
@@ -53,88 +58,44 @@ public class AvaliacaoControllerTests {
         avaliacaoRepository.deleteAll();
     }
 
-    private Avaliacao salvarCurso(String nome, boolean deletado) {
+    private Avaliacao salvarCurso(String autor, String conteudo, NotaAvaliacao nota, LocalDate dataAvaliacao) {
         Avaliacao avaliacao = new Avaliacao();
-        avaliacao.setNome(nome);
-        avaliacao.setDescricao("Descrição de " + nome);
-        avaliacao.setCargaHoraria(40);
-        avaliacao.setDeletado(deletado);
+        avaliacao.setAutor(autor);
+        avaliacao.setConteudo(conteudo);
+        avaliacao.setNota(nota);
+        avaliacao.setDataAvaliacao(dataAvaliacao);
         return avaliacaoRepository.save(avaliacao);
     }
 
-    // POST /cursos
+    // POST /avaliacao
 
     @Test
-    public void deveCriarCurso() throws Exception {
-        AvaliacaoDto dto = new AvaliacaoDto("Java Básico", "Introdução à linguagem", 40);
+    public void test_shouldCreateAvaliacao() throws Exception {
 
-        mockMvc.perform(post("/cursos")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(dto)))
+        AvaliacaoDto dto = new AvaliacaoDto();
+        dto.setAutor("Carolina");
+        dto.setConteudo("Java");
+        dto.setNota(NotaAvaliacao.CINCO);
+        dto.setDataAvaliacao(LocalDate.now());
+
+        // chamada
+        MvcResult result = mockMvc.perform(
+                        post("/api/avaliacao")
+                                .contentType("application/json")
+                                .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.nome").value("Java Básico"))
-                .andExpect(jsonPath("$.cargaHoraria").value(40))
-                .andExpect(jsonPath("$.deletado").value(false));
+                .andReturn();
 
-        Assertions.assertEquals(1, avaliacaoRepository.count());
-    }
+        // asserts
 
-    // GET /cursos
+        Avaliacao avaliacao = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                Avaliacao.class);
+        Assertions.assertNotNull(avaliacao.getId());
+        Assertions.assertEquals("Carolina", avaliacao.getAutor());
+        Assertions.assertEquals("Java", avaliacao.getConteudo());
+        Assertions.assertEquals(NotaAvaliacao.CINCO, avaliacao.getNota());
 
-    @Test
-    public void deveListarApenasCursosNaoDeletados() throws Exception {
-        salvarCurso("Java Básico", false);
-        salvarCurso("Python", false);
-        salvarCurso("Curso Antigo", true);
-
-        mockMvc.perform(get("/cursos"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[*].nome").value(containsInAnyOrder("Java Básico", "Python")));
-    }
-
-    @Test
-    public void deveFiltrarCursosPeloInicioDoNome() throws Exception {
-        salvarCurso("Java Básico", false);
-        salvarCurso("JavaScript", false);
-        salvarCurso("Aprenda Java", false);
-        salvarCurso("Java Deletado", true);
-
-        mockMvc.perform(get("/cursos").param("nome", "Java"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[*].nome").value(containsInAnyOrder("Java Básico", "JavaScript")));
-    }
-
-    // DELETE /cursos/{id}
-
-    @Test
-    public void deveDeletarCursoLogicamente() throws Exception {
-        Avaliacao avaliacao = salvarCurso("Java Básico", false);
-
-        mockMvc.perform(delete("/cursos/" + avaliacao.getId()))
-                .andExpect(status().isNoContent());
-
-        Avaliacao noBanco = avaliacaoRepository.findById(avaliacao.getId()).orElseThrow();
-        Assertions.assertTrue(noBanco.isDeletado());
-
-        mockMvc.perform(get("/cursos"))
-                .andExpect(jsonPath("$.length()").value(0));
-    }
-
-    @Test
-    public void deveRetornar404AoDeletarCursoInexistente() throws Exception {
-        mockMvc.perform(delete("/cursos/9999"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void deveRetornar404AoDeletarCursoJaDeletado() throws Exception {
-        Avaliacao avaliacao = salvarCurso("Java Básico", true);
-
-        mockMvc.perform(delete("/cursos/" + avaliacao.getId()))
-                .andExpect(status().isNotFound());
     }
 
 }

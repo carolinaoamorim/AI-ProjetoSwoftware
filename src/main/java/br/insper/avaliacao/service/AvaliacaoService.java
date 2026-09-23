@@ -16,19 +16,19 @@ public class AvaliacaoService {
 // criar, listar, buscar por id, excluir
 
 	@Autowired
-	private AvaliacaoRepository avaliacaoRepository;
+	private static AvaliacaoRepository avaliacaoRepository;
 
 	public List<Avaliacao> listarTodos() {
 		return avaliacaoRepository.findAll();
 	}
 
-	public Optional<Avaliacao> listarPorId(Long id) {
+	public static Optional<Avaliacao> listarPorId(Long id) {
 		return avaliacaoRepository.findById(id);
 	}
 
 	public Avaliacao criar(AvaliacaoDto dto) {
-		if (dto.getAutor() == null || dto.getNota() == null) {
-			throw new ValidacaoAvaliacaoException("Autor e nota são obrigatórios");
+		if (dto.getAutor() == null) {
+			throw new ValidacaoAvaliacaoException("Autor é obrigatório");
 		}
 		Avaliacao avaliacao = Avaliacao.fromDto(dto);
 		return avaliacaoRepository.save(avaliacao);

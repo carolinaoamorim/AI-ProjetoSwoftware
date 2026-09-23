@@ -32,9 +32,6 @@ public class Avaliacao {
 	@Column
 	private LocalDate dataAvaliacao;
 
-	@Column(nullable = false)
-	private boolean deletado = false;
-
 	public static Avaliacao fromDto(AvaliacaoDto dto) {
 		Avaliacao avaliacao = new Avaliacao();
 		avaliacao.setAutor(dto.getAutor());
