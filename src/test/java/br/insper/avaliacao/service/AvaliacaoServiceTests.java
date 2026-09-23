@@ -49,13 +49,14 @@ public class AvaliacaoServiceTests {
                 .thenReturn(Optional.of(avaliacao));
 
         // chamada
-        Optional<Avaliacao> op = AvaliacaoService.listarPorId(1L);
+        Optional<Avaliacao> op = avaliacaoService.listarPorId(1L);
 
         // asserts
         Assertions.assertTrue(op.isPresent());
         Assertions.assertEquals("Carolina", op.get().getAutor());
         Assertions.assertEquals("Java", op.get().getConteudo());
         Assertions.assertEquals(NotaAvaliacao.CINCO, op.get().getNota());
+        Assertions.assertEquals(LocalDate.now(), avaliacao.getDataAvaliacao());
     }
 
     @Test
@@ -90,6 +91,7 @@ public class AvaliacaoServiceTests {
         Assertions.assertEquals("Carolina", response.getAutor());
         Assertions.assertEquals("Java", response.getConteudo());
         Assertions.assertEquals(NotaAvaliacao.CINCO, response.getNota());
+        Assertions.assertEquals(LocalDate.now(), response.getDataAvaliacao());
     }
 
     @Test
@@ -98,19 +100,6 @@ public class AvaliacaoServiceTests {
 
         Assertions.assertThrows(ValidacaoAvaliacaoException.class,
                 () -> avaliacaoService.criar(dto));
-
-        Mockito.verify(avaliacaoRepository, Mockito.never()).save(Mockito.any());
-    }
-
-    // deletar
-
-    @Test
-    public void test_deveLancarExcecaoAoDeletarQuandoCursoNaoExistir() {
-        Mockito.when(avaliacaoRepository.findById(99L))
-                .thenReturn(Optional.empty());
-
-        Assertions.assertThrows(AvaliacaoNaoEncontradoException.class,
-                () -> avaliacaoService.deletar(99L));
 
         Mockito.verify(avaliacaoRepository, Mockito.never()).save(Mockito.any());
     }

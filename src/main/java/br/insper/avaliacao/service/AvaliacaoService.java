@@ -16,13 +16,13 @@ public class AvaliacaoService {
 // criar, listar, buscar por id, excluir
 
 	@Autowired
-	private static AvaliacaoRepository avaliacaoRepository;
+	private AvaliacaoRepository avaliacaoRepository;
 
 	public List<Avaliacao> listarTodos() {
 		return avaliacaoRepository.findAll();
 	}
 
-	public static Optional<Avaliacao> listarPorId(Long id) {
+	public Optional<Avaliacao> listarPorId(Long id) {
 		return avaliacaoRepository.findById(id);
 	}
 

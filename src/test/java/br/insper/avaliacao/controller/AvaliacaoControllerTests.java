@@ -95,6 +95,7 @@ public class AvaliacaoControllerTests {
         Assertions.assertEquals("Carolina", avaliacao.getAutor());
         Assertions.assertEquals("Java", avaliacao.getConteudo());
         Assertions.assertEquals(NotaAvaliacao.CINCO, avaliacao.getNota());
+        Assertions.assertEquals(LocalDate.now(), avaliacao.getDataAvaliacao());
 
     }
 
